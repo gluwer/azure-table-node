@@ -1,0 +1,32 @@
+{
+  "name": "azure-table-node",
+  "version": "0.1.0",
+  "description": "Azure Table Storage client using JSON on the wire",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/all.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gluwer/azure-table-node.git"
+  },
+  "keywords": [
+    "azure",
+    "storage",
+    "table",
+    "client"
+  ],
+  "author": "Gluwer Rafał Jońca",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gluwer/azure-table-node/issues"
+  },
+  "homepage": "https://github.com/gluwer/azure-table-node",
+  "directories": {
+    "test": "./test",
+    "lib": "./lib"
+  },
+  "engines": {
+    "node": ">= 0.10"
+  }
+}
