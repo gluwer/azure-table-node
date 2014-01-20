@@ -16,7 +16,10 @@
     "table",
     "client"
   ],
-  "author": "Gluwer Rafał Jońca",
+  "author": {
+    "name": "Gluwer Rafał Jońca",
+    "email": "rafal@gluwer.com"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/gluwer/azure-table-node/issues"
@@ -27,6 +30,14 @@
     "lib": "./lib"
   },
   "engines": {
-    "node": ">= 0.10"
+    "node": ">= 0.8.26"
+  },
+  "dependencies": {
+    "request": "~2.31.0",
+    "lodash": "~2.4.1"
+  },
+  "devDependencies": {
+    "mocha": "~1.17.0",
+    "chai": "~1.8.1"
   }
 }
