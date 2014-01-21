@@ -122,3 +122,13 @@ Removes existing table. The `table` is table name. The `cb` is a standard callba
 
 Returns array with table names (as strings). The `options` is optional, but if exists and `nextTableName` key is provided, the retrieval will start from last continuation token. The `cb` is a standard callback function, but if continuation is required, the third argument will be passed with value for `nextTableName` key.
 
+
+Running tests
+=============
+
+Run the tests using mocha from main project folder. But before that set the environment variable as some tests are relying on default:
+
+```
+set CLOUD_STORAGE_ACCOUNT=TableEndpoint=http://dummy.table.core.windows.net/;AccountName=dummy;AccountKey=DWFdvtgaJ/4okdYJs1sAr1yyvrRe4dAuY5yPg+R+Wsl5wMiX6QOZ+6egJseLXK8YlDASx6eP0bfWV3rgZlgxYA==
+mocha
+```

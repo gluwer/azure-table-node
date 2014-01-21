@@ -8,7 +8,7 @@ describe('default client', function() {
   var oldEnvSetting;
   before(function() {
     oldEnvSetting = process.env.CLOUD_STORAGE_ACCOUNT;
-    process.env.CLOUD_STORAGE_ACCOUNT = 'TableEndpoint=http://dummy.table.core.windows.net/;AccountName=dummy;AccountKey=XUpVW5efmPDA42r4VY/86bt9k+smnhdEFVRRGrrt/wE0SmFg==';
+    process.env.CLOUD_STORAGE_ACCOUNT = 'TableEndpoint=https://dummy.table.core.windows.net/;AccountName=dummy;AccountKey=DWFdvtgaJ/4okdYJs1sAr1yyvrRe4dAuY5yPg+R+Wsl5wMiX6QOZ+6egJseLXK8YlDASx6eP0bfWV3rgZlgxYA==';
   });
 
   after(function() {
@@ -29,9 +29,9 @@ describe('default client', function() {
     expect(defaultClient).to.be.an('object');
 
     var settings = defaultClient.getSettings();
-    expect(settings).to.have.property('accountUrl', 'http://dummy.table.core.windows.net/');
+    expect(settings).to.have.property('accountUrl', 'https://dummy.table.core.windows.net/');
     expect(settings).to.have.property('accountName', 'dummy');
-    expect(settings).to.have.property('accountKey', 'XUpVW5efmPDA42r4VY/86bt9k+smnhdEFVRRGrrt/wE0SmFg==');
+    expect(settings).to.have.property('accountKey', 'DWFdvtgaJ/4okdYJs1sAr1yyvrRe4dAuY5yPg+R+Wsl5wMiX6QOZ+6egJseLXK8YlDASx6eP0bfWV3rgZlgxYA==');
     expect(settings).to.have.property('timeout', 10000);
   });
 
@@ -46,9 +46,9 @@ describe('default client', function() {
     expect(newDefaultClient).to.be.an('object');
 
     var settings = newDefaultClient.getSettings();
-    expect(settings).to.have.property('accountUrl', 'http://dummy.table.core.windows.net/');
+    expect(settings).to.have.property('accountUrl', 'https://dummy.table.core.windows.net/');
     expect(settings).to.have.property('accountName', 'zebra');
-    expect(settings).to.have.property('accountKey', 'XUpVW5efmPDA42r4VY/86bt9k+smnhdEFVRRGrrt/wE0SmFg==');
+    expect(settings).to.have.property('accountKey', 'DWFdvtgaJ/4okdYJs1sAr1yyvrRe4dAuY5yPg+R+Wsl5wMiX6QOZ+6egJseLXK8YlDASx6eP0bfWV3rgZlgxYA==');
     expect(settings).to.have.property('timeout', 15000);
     expect(settings).to.have.property('aSetting', 'HELLO');
   });

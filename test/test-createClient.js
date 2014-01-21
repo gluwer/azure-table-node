@@ -1,5 +1,5 @@
 /* jshint expr: true */
-/* globals it, describe, before, after */
+/* globals it, describe */
 'use strict';
 
 var expect = require('chai').expect;
@@ -8,7 +8,9 @@ var azureTable = require('../index');
 describe('create client', function() {
   it('should throw exception if account settings are not set up and created client doesn\'t define them', function() {
     function creatingClient() {
-      azureTable.createClient();
+      azureTable.createClient({
+        accountUrl: null
+      });
     }
 
     expect(creatingClient).to.throw('Provide accountUrl, accountName, and accountKey in settings or in env CLOUD_STORAGE_ACCOUNT');
