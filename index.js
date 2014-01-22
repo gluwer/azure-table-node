@@ -6,7 +6,7 @@ var Client = require('./lib/client').Client;
 
 var _defaultClientSetting = {
   timeout: 10000,
-  metadata: 'no'
+  metadata: 'minimal'
 };
 
 // default client is created lazily on first get or set request

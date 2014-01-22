@@ -13,7 +13,6 @@ describe('default client', function() {
 
   before(function(){
     client = azureTable.getDefaultClient();
-    console.log(client.getSettings());
   });
 
   afterEach(function(){

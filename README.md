@@ -78,7 +78,7 @@ Underlying HTTP request related (passed without changes to request module):
 
 Azure Table Storage related:
 
-* `metadata` (string) - default metadata level, available values: `no`, `minimal`, `full` (default: `no`)
+* `metadata` (string) - default metadata level, available values: `no`, `minimal`, `full` (default: `minimal`)
 * `returnInserts` (bool) - set to true to get back inserted content (usable if etag is needed)
 
 API
