@@ -21,7 +21,7 @@ describe('default client', function() {
 
   it('should create testtable table using required headers', function(done) {
     var azure = nock('https://dummy.table.core.windows.net:443')
-      .matchHeader('accept', 'application/json;odata=nometadata')
+      .matchHeader('accept', 'application/json;odata=minimalmetadata')
       .matchHeader('DataServiceVersion', '3.0;NetFx')
       .matchHeader('x-ms-version', '2013-08-15')
       .matchHeader('prefer', 'return-no-content')
@@ -55,7 +55,6 @@ describe('default client', function() {
         'transfer-encoding': 'chunked',
         'content-type': 'application/json;odata=nometadata;streaming=true;charset=utf-8',
         'x-ms-version': '2013-08-15',
-        'preference-applied': 'return-no-content',
         date: 'Tue, 21 Jan 2014 12:46:46 GMT' });
 
     client.createTable('testtable', function(err, data) {
@@ -77,7 +76,6 @@ describe('default client', function() {
         'transfer-encoding': 'chunked',
         'content-type': 'application/json;odata=nometadata;streaming=true;charset=utf-8',
         'x-ms-version': '2013-08-15',
-        'preference-applied': 'return-no-content',
         date: 'Tue, 21 Jan 2014 12:46:46 GMT' });
 
     client.createTable('testtable', {ignoreIfExists: true}, function(err, data) {

@@ -78,13 +78,12 @@ Underlying HTTP request related (passed without changes to request module):
 
 Azure Table Storage related:
 
-* `metadata` (string) - default metadata level, available values: `no`, `minimal`, `full` (default: `minimal`)
-* `returnInserts` (bool) - set to true to get back inserted content (usable if etag is needed)
+* `metadata` (string) - default metadata level, available values: `no`, `minimal`, `full` (default: `minimal`); if `no` is used, you have to take care yourself of changing Date, int64 and binary from strings to proper objects
 
 API
 ===
 
-If not explained differently, `cb` in API is a functions in format function cb(err, data). For queries there may be additional third argument passed if there is a continuation token.
+If not explained differently, `cb` in API is a functions in format `function cb(err, data)`. For queries there may be additional third argument passed if there is a continuation token.
 
 ## Module level
 
@@ -121,6 +120,35 @@ Removes existing table. The `table` is table name. The `cb` is a standard callba
 ### listTables([options], cb)
 
 Returns array with table names (as strings). The `options` is optional, but if exists and `nextTableName` key is provided, the retrieval will start from last continuation token. The `cb` is a standard callback function, but if continuation is required, the third argument will be passed with value for `nextTableName` key.
+
+### insertEntity(table, entity, [options], cb)
+
+Creates new `entity` in `table`. The `entity` must at least contain `PartitionKey` and `RowKey` as strings. The `options` have one setting supported `returnEntity`. If set to `true`, it will return the entity in `data` element in entity key (etag will be in `__etag` property). Otherwise function will return etag in data (as string).
+
+### insertOrReplaceEntity(table, entity, cb)
+
+Creates new `entity` in `table`. If it exists, it will be replaced. The `entity` must  contain `PartitionKey` and `RowKey` as strings. The `data` contains etag of inserted/replaced entity.
+
+### insertOrMergeEntity(table, entity, cb)
+
+Creates new `entity` in `table`. If it exists, passed values will be merged with existing ones. The `entity` must contain `PartitionKey` and `RowKey` as strings. The `data` contains etag of inserted/merged entity.
+
+### updateEntity(table, entity, [options], cb)
+
+Updates `entity` in `table`. The `entity` must contain `PartitionKey` and `RowKey` as strings and also `__etag` if `force` is not used. The `options` object is optional. Use key `force` set to `true` to not use etag for optimistic concurrency. The `data` in callback contains new etag value.
+
+### mergeEntity(table, entity, [options], cb)
+
+Merge update of `entity` in `table`. The `entity` must contain `PartitionKey` and `RowKey` as strings and also `__etag` if `force` is not used. The `options` object is optional. Use key `force` set to `true` to not use etag for optimistic concurrency. The `data` in callback contains new etag value.
+
+### deleteEntity(table, entity, [options], cb)
+
+Removes `entity` from `table`. The `entity` must contain `PartitionKey` and `RowKey` as strings and also `__etag` if `force` is not used. The `options` object is optional. Use key `force` set to `true` to not use etag for optimistic concurrency. The `data` in callback will always be undefined.
+
+### getEntity(table, partitionKey, rowKey, [options], cb)
+
+Retrieves one entity from `table`. Entity is located by `partitionKey` and `rowKey` values as strings. The `options` object is optional.  Use `onlyFields` as array of strings to retrieve only mentioned fields.
+
 
 
 Running tests

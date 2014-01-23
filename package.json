@@ -4,7 +4,7 @@
   "description": "Azure Table Storage client using JSON on the wire",
   "main": "index.js",
   "scripts": {
-    "test": "node test/all.js"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -34,11 +34,11 @@
   },
   "dependencies": {
     "request": "~2.31.0",
-    "lodash": "~2.4.1",
-    "nock": "~0.27.1"
+    "lodash": "~2.4.1"
   },
   "devDependencies": {
     "mocha": "~1.17.0",
-    "chai": "~1.8.1"
+    "chai": "~1.8.1",
+    "nock": "~0.27.1"
   }
 }
