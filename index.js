@@ -3,6 +3,7 @@
 var _ = require('lodash');
 var utils = require('./lib/utils');
 var Client = require('./lib/client').Client;
+var Query = require('./lib/query').Query;
 
 var _defaultClientSetting = {
   timeout: 10000,
@@ -61,7 +62,11 @@ var azureTable = {
   // (options{object}) -> Client object
   setDefaultClient: setDefaultClient,
   // (options{object}, [base{object}]) -> Client object
-  createClient: createClient
+  createClient: createClient,
+  // Client object
+  Client: Client,
+  // Query object
+  Query: Query
 };
 
 _initDefaultConnection();

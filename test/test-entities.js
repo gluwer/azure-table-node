@@ -439,4 +439,191 @@ describe('default client', function() {
       done();
     });
   });
+
+  it('should return empty array if no entities match query', function(done) {
+    var azure = nock('https://dummy.table.core.windows.net:443')
+      .get('/testtable()?%24filter=PartitionKey%20eq%20%27tests1%27')
+      .reply(200, "{\"odata.metadata\":\"https://dummy.table.core.windows.net/$metadata#testtable\",\"value\":[]}", { 'cache-control': 'no-cache',
+        'transfer-encoding': 'chunked',
+        'content-type': 'application/json;odata=minimalmetadata;streaming=true;charset=utf-8',
+        'x-ms-version': '2013-08-15',
+        date: 'Fri, 24 Jan 2014 12:46:16 GMT' });
+
+    client.queryEntities('testtable', {
+      query: azureTable.Query.create('PartitionKey', '==', 'tests1')
+    }, function(err, data) {
+      expect(err).to.be.null;
+      expect(data).to.be.an.array;
+      expect(data).to.have.lengthOf(0);
+      expect(azure.isDone()).to.be.true;
+
+      done();
+    });
+  });
+
+  it('should return all 3 array elements if no query is used', function(done) {
+    var azure = nock('https://dummy.table.core.windows.net:443')
+      .get('/testtable()')
+      .reply(200, "{\"odata.metadata\":\"https://dummy.table.core.windows.net/$metadata#testtable\",\"value\":[{\"PartitionKey\":\"tests\",\"RowKey\":\"test1\",\"Timestamp\":\"2014-01-24T11:18:02Z\",\"Ab\":\"ABC\"},{\"PartitionKey\":\"tests\",\"RowKey\":\"test2\",\"Timestamp\":\"2014-01-24T11:18:25Z\",\"Ab\":\"DEF\"},{\"PartitionKey\":\"testz\",\"RowKey\":\"test1\",\"Timestamp\":\"2014-01-24T11:18:49Z\",\"Ab\":\"XYZ\"}]}", { 'cache-control': 'no-cache',
+        'transfer-encoding': 'chunked',
+        'content-type': 'application/json;odata=minimalmetadata;streaming=true;charset=utf-8',
+        'x-ms-version': '2013-08-15',
+        date: 'Fri, 24 Jan 2014 12:52:29 GMT' });
+
+    client.queryEntities('testtable', function(err, data, continuation) {
+      expect(err).to.be.null;
+      expect(data).to.be.an.array;
+      expect(data).to.have.lengthOf(3);
+      expect(data[0]).to.have.property('PartitionKey', 'tests');
+      expect(data[0]).to.have.property('RowKey', 'test1');
+      expect(data[0].Timestamp.toISOString()).to.equal('2014-01-24T11:18:02.000Z');
+      expect(data[0]).to.have.property('Ab', 'ABC');
+
+      expect(data[1]).to.have.property('PartitionKey', 'tests');
+      expect(data[1]).to.have.property('RowKey', 'test2');
+
+      expect(data[2]).to.have.property('PartitionKey', 'testz');
+      expect(data[2]).to.have.property('RowKey', 'test1');
+
+      expect(continuation).to.be.undefined;
+
+      expect(azure.isDone()).to.be.true;
+
+      done();
+    });
+  });
+
+  it('should return all 2 array elements when limitTo is 2, only selected fields and return continuation', function(done) {
+    var azure = nock('https://dummy.table.core.windows.net:443')
+      .get('/testtable()?%24top=2&%24select=RowKey%2CAb')
+      .reply(200, "{\"odata.metadata\":\"https://dummy.table.core.windows.net/$metadata#testtable&$select=RowKey,Ab\",\"value\":[{\"RowKey\":\"test1\",\"Ab\":\"ABC\"},{\"RowKey\":\"test2\",\"Ab\":\"DEF\"}]}", { 'cache-control': 'no-cache',
+        'transfer-encoding': 'chunked',
+        'content-type': 'application/json;odata=minimalmetadata;streaming=true;charset=utf-8',
+        'x-ms-version': '2013-08-15',
+        'x-ms-continuation-nextpartitionkey': '1!8!dGVzdHo-',
+        'x-ms-continuation-nextrowkey': '1!8!dGVzdDE-',
+        date: 'Fri, 24 Jan 2014 14:21:35 GMT' });
+
+    client.queryEntities('testtable', {
+      limitTo: 2,
+      onlyFields: ['RowKey', 'Ab']
+    }, function(err, data, continuation) {
+      expect(err).to.be.null;
+      expect(data).to.be.an.array;
+      expect(data).to.have.lengthOf(2);
+      expect(data[0]).to.not.have.property('PartitionKey');
+      expect(data[0]).to.have.property('RowKey', 'test1');
+      expect(data[0]).to.not.have.property('Timestamp');
+      expect(data[0]).to.have.property('Ab', 'ABC');
+      expect(data[1]).to.have.property('RowKey', 'test2');
+      expect(data[1]).to.have.property('Ab', 'DEF');
+
+      expect(continuation).to.be.an.array;
+      expect(continuation).to.be.deep.equal(['1!8!dGVzdHo-','1!8!dGVzdDE-']);
+
+      expect(azure.isDone()).to.be.true;
+
+      done();
+    });
+  });
+
+  it('should use continuation to return next part of results', function(done) {
+    var azure = nock('https://dummy.table.core.windows.net:443')
+      .get('/testtable()?%24top=2&NextPartitionKey=1!8!dGVzdHo-&NextRowKey=1!8!dGVzdDE-&%24select=RowKey%2CAb')
+      .reply(200, "{\"odata.metadata\":\"https://dummy.table.core.windows.net/$metadata#testtable&$select=RowKey,Ab\",\"value\":[{\"RowKey\":\"test1\",\"Ab\":\"XYZ\"}]}", { 'cache-control': 'no-cache',
+        'transfer-encoding': 'chunked',
+        'content-type': 'application/json;odata=minimalmetadata;streaming=true;charset=utf-8',
+        'x-ms-version': '2013-08-15',
+        date: 'Fri, 24 Jan 2014 14:30:57 GMT' });
+
+    client.queryEntities('testtable', {
+      limitTo: 2,
+      onlyFields: ['RowKey', 'Ab'],
+      continuation: ['1!8!dGVzdHo-','1!8!dGVzdDE-']
+    }, function(err, data, continuation) {
+      expect(err).to.be.null;
+      expect(data).to.be.an.array;
+      expect(data).to.have.lengthOf(1);
+      expect(data[0]).to.not.have.property('PartitionKey');
+      expect(data[0]).to.have.property('RowKey', 'test1');
+      expect(data[0]).to.not.have.property('Timestamp');
+      expect(data[0]).to.have.property('Ab', 'XYZ');
+
+      expect(continuation).to.be.undefined;
+
+      expect(azure.isDone()).to.be.true;
+
+      done();
+    });
+  });
+
+  it('should return a limited query with etags', function(done) {
+    var azure = nock('https://dummy.table.core.windows.net:443')
+      .matchHeader('accept', 'application/json;odata=fullmetadata')
+      .get('/testtable()?%24filter=Ab%20eq%20%27XYZ%27%20or%20Ab%20eq%20%27ABC%27')
+      .reply(200, "{\"odata.metadata\":\"https://dummy.table.core.windows.net/$metadata#testtable\",\"value\":[{\"odata.type\":\"dummy.testtable\",\"odata.id\":\"https://dummy.table.core.windows.net/testtable(PartitionKey='tests',RowKey='test1')\",\"odata.etag\":\"W/\\\"datetime'2014-01-24T11%3A18%3A02.8439287Z'\\\"\",\"odata.editLink\":\"testtable(PartitionKey='tests',RowKey='test1')\",\"PartitionKey\":\"tests\",\"RowKey\":\"test1\",\"Timestamp@odata.type\":\"Edm.DateTime\",\"Timestamp\":\"2014-01-24T11:18:02.8439287Z\",\"Ab\":\"ABC\"},{\"odata.type\":\"dummy.testtable\",\"odata.id\":\"https://dummy.table.core.windows.net/testtable(PartitionKey='testz',RowKey='test1')\",\"odata.etag\":\"W/\\\"datetime'2014-01-24T11%3A18%3A49.3485787Z'\\\"\",\"odata.editLink\":\"testtable(PartitionKey='testz',RowKey='test1')\",\"PartitionKey\":\"testz\",\"RowKey\":\"test1\",\"Timestamp@odata.type\":\"Edm.DateTime\",\"Timestamp\":\"2014-01-24T11:18:49.3485787Z\",\"Ab\":\"XYZ\"}]}", { 'cache-control': 'no-cache',
+        'transfer-encoding': 'chunked',
+        'content-type': 'application/json;odata=fullmetadata;streaming=true;charset=utf-8',
+        'x-ms-version': '2013-08-15',
+        date: 'Fri, 24 Jan 2014 14:39:24 GMT' });
+
+    client.queryEntities('testtable', {
+      query: azureTable.Query.create().where('Ab', '==', 'XYZ').or('Ab', '==', 'ABC'),
+      forceEtags: true
+    }, function(err, data, continuation) {
+      expect(err).to.be.null;
+      expect(data).to.be.an.array;
+      expect(data).to.have.lengthOf(2);
+      expect(data[0]).to.have.property('Ab', 'ABC');
+      expect(data[0]).to.have.property('__etag');
+      expect(data[1]).to.have.property('Ab', 'XYZ');
+      expect(data[1]).to.have.property('__etag');
+
+      expect(continuation).to.be.undefined;
+
+      expect(azure.isDone()).to.be.true;
+
+      done();
+    });
+  });
+
+  it('should throw an exception on invalid input data', function(done) {
+    function limitToThrow() {
+      client.queryEntities('testtable', {
+        limitTo: 1001
+      }, function() {
+        done(true);
+      });
+    }
+    expect(limitToThrow).to.throw('The limitTo must be in rage [1, 1000]');
+
+    function limitToThrow2() {
+      client.queryEntities('testtable', {
+        limitTo: -1
+      }, function() {
+        done(true);
+      });
+    }
+    expect(limitToThrow2).to.throw('The limitTo must be in rage [1, 1000]');
+
+    function continuationThrow() {
+      client.queryEntities('testtable', {
+        continuation: [1,2]
+      }, function() {
+        done(true);
+      });
+    }
+    expect(continuationThrow).to.throw('The continuation array must contain strings');
+
+    function onlyFieldsThrow() {
+      client.queryEntities('testtable', {
+        onlyFields: []
+      }, function() {
+        done(true);
+      });
+    }
+    expect(onlyFieldsThrow).to.throw('The onlyFields field from options must be an nonempty array if used');
+
+    done();
+  });
 });

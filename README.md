@@ -149,6 +149,45 @@ Removes `entity` from `table`. The `entity` must contain `PartitionKey` and `Row
 
 Retrieves one entity from `table`. Entity is located by `partitionKey` and `rowKey` values as strings. The `options` object is optional.  Use `onlyFields` as array of strings to retrieve only mentioned fields.
 
+### queryEntities(table, [options], cb)
+
+Retrieve up to 1000 entities as array. The `options` is optional. If not used first 1000 entities of table will be returned (or less if they do not exist). Callback will receive in `data` an array of entities. If not everything was returned, the third argument will contain two element array with continuation tokens. The should be used in options to retrieve next part of results.
+
+Options can contain below elements. All are optional:
+
+* `query` -- the `Query` object for returned entities filtering or string with properly created `$filter` (for very advanced queries)
+* `limitTo` -- integer, if provided it will return no more than this results
+* `onlyFields` -- array of strings to retrieve only mentioned fields
+* `forceEtags` -- if set to `true` it will force of etag retrieval (even if full metadata is not set for this client)
+* `continuation` -- array with two strings working as continuation token (array is returned as third argument in previous query)
+
+## Query object level
+
+The `Key` part is a string with field name. It can also be a `PartitionKey` or `RowKey`, but if only one row is going to be returned without additional filters, it is better to use `getEntity()` method.
+
+The `comparison` only allows 6 standard comparison operators passed as strings: `==`, `!=`, `<`, `>`, `>=`, and `<=`. Passing anything else will end up throwing exception.
+
+The `value` element can be a string, number, boolean or `Date` object. Everything else will be converted to string using `toString()`.
+
+### create([key, comparison, value])
+
+Creates and returns new `Query` object. For convenience it can use `where()` parameters. If all three are provided, `Query.create('a', '==', 'b')` is equivalent of `Query.create().where('a', '==', 'b')`.
+
+### where(key, comparison, value)
+
+Adds first query element. Cannot be used after the first one (will throw exception). Returns `Query` object.
+
+### and(key, comparison, value)
+
+Adds next query element using AND clause. Cannot be used as the first one (will throw exception). Returns `Query` object.
+
+### or(key, comparison, value)
+
+Adds next query element using OR clause. Cannot be used as the first one (will throw exception). Returns `Query` object.
+
+### not()
+
+Will negate next element. Returns `Query` object.
 
 
 Running tests
