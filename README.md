@@ -79,6 +79,44 @@ Underlying HTTP request related (passed without changes to request module):
 Azure Table Storage related:
 
 * `metadata` (string) - default metadata level, available values: `no`, `minimal`, `full` (default: `minimal`); if `no` is used, you have to take care yourself of changing Date, int64 and binary from strings to proper objects
+* `retry` (false/object/function) - set to `false` to turn off any retry policy; provide a function for custom retry logic or use object to change parameter of build in retry logic
+
+Retry options:
+
+* `retries` (int) - a number of retries (default: 3)
+* `firstDelay` (int) - delay of the first retry request in ms (default: 2000ms)
+* `nextDelayMult` (float) - delay multiplier using previous delay as a base (default: 2); use 1 for linear delay
+* `variability` (float) - random delay multiplier added or subtracted from current delay (default 0.2)
+* `transientErrors` (array of ints or strings) - describes situations where retry should be used; if it is int, status code is checked for equality; for string the code element of error or response is checked (default: `[500, 501, 502, 503, 'ETIMEDOUT', 'ECONNRESET', 'EADDRINUSE', 'ESOCKETTIMEDOUT']`
+
+Custom retry function should support below parameters (in order of appearance):
+
+* `requestOptions` (object) - if needed it can be edited in place to change request options and headers
+* `nextReq` (function) - function to be called to make a request.
+
+The `nextReq` function must be called passing additional function `retryFn` with below parameters:
+
+* `err` (object) - null or error object from response (see normal response callback)
+* `resp` (object/array) - response object (see normal response callback)
+* `nextResp` (function) - function to be called when there is no need for a retry passing (`err` and `resp` to it)
+
+As by default request headers are not regenerated on retries, the retry time of of the last one cannot be very long, because authentication will fail.
+
+Example retry function which retries every time `code` in error is `ETIMEDOUT`:
+
+```javascript
+function _retryLogic(requestOptions, nextReq) {
+  function retryFn(err, resp, nextResp) {
+    if (err && err.code === 'ETIMEDOUT') {
+      nextReq(retryFn);
+    } else {
+      nextResp(err, resp);
+    }
+  }
+  nextReq(retryFn);
+}
+```
+
 
 API
 ===
