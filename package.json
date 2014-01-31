@@ -34,7 +34,9 @@
   },
   "dependencies": {
     "request": "~2.31.0",
-    "lodash": "~2.4.1"
+    "lodash": "~2.4.1",
+    "node-uuid": "~1.4.1",
+    "async": "~0.2.10"
   },
   "devDependencies": {
     "mocha": "~1.17.0",

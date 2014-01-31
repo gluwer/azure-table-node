@@ -41,7 +41,7 @@ var defaultClient = azureTable.getDefaultClient();
 
 // use the client to create the table
 defaultClient.createTable('tableName', true, cb);
-
+// or insert entity
 defaultClient.insert('table', entity, options, cb);
 ```
 
@@ -58,6 +58,54 @@ var tableClient = azureTable.createClient({
 ```
 
 Base client is the client on which the new one will be based. If not provided, it is based on the default one.
+
+## Longer usage example
+
+```javascript
+var client = azureTable.getDefaultClient();
+client.insertEntity('testtable', {
+  PartitionKey: 'tests',
+  RowKey: 'insert',
+  value1: 'ABCDEFG'
+}, function(err, data) {
+  // err is null
+  // data contains etag
+});
+client.getEntity('testtable', 'tests', 'tests', function(err, data) {
+  // err is null
+  // data contains the object with entity
+});
+client.queryEntities('testtable', {
+ query: azureTable.Query.create('PartitionKey', '==', 'tests')
+ limitTo: 20,
+ onlyFields: ['RowKey', 'value1']
+}, function(err, data, continuation) {
+  // err is null
+  // data contains the array of objects (entities)
+  // continuation is undefined or two element array to be passed to next query
+});
+client.deleteEntity('testtable', {
+  PartitionKey: 'tests',
+  RowKey: 'insert',
+  __etag: 'W/"datetime\'2014-01-23T07%3A34%3A30.4871837Z\'"'
+}, function(err, data) {
+  // err is null
+  // data is undefined
+});
+var batchClient = client.startBatch();
+batchClient.updateEntity('testtable', {
+  PartitionKey: 'tests',
+  RowKey: 'insert1',
+  value: 11
+}, {force: true}).deleteEntity('testtable', {
+  PartitionKey: 'tests',
+  RowKey: 'insert2',
+  __etag: 'W/"datetime\'2014-01-31T10%3A14%3A18.918655Z\'"'
+}).commit(function(err, data) {
+  // err is null
+  // data to be an array of results
+});
+```
 
 Client settings
 ===============
@@ -116,7 +164,6 @@ function _retryLogic(requestOptions, nextReq) {
   nextReq(retryFn);
 }
 ```
-
 
 API
 ===
@@ -198,6 +245,14 @@ Options can contain below elements. All are optional:
 * `onlyFields` -- array of strings to retrieve only mentioned fields
 * `forceEtags` -- if set to `true` it will force of etag retrieval (even if full metadata is not set for this client)
 * `continuation` -- array with two strings working as continuation token (array is returned as third argument in previous query)
+
+### startBatch()
+
+This method will return new object that you use to prepare a batch. All methods available on `Client` can be used, but because of the limitations of Azure Table Storage (like only one query in batch) you should limit yourself only to insert, update, merge and delete operations. **Do not provide callback functions to those methods. Otherwise the results may not be as expected**. After adding all of them (up to 100) call `commit()` to send the batch.
+
+### commit(cb) - in objects returned by startBatch()
+
+Sends the batch request. Requires only callback function. In case of error the callback's first parameter will receive error info for operation that was the reason of the error. If the whole batch was committed, second argument will contain array of responses for each operation.
 
 ## Query object level
 
