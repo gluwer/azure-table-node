@@ -3,7 +3,17 @@ azure-table-node
 
 Simplified Azure Table Storage client library for NodeJS.
 
-*This is a work in progress. Not usable yet!*
+What is supported:
+
+* creating, deleting and listing tables
+* creating, updating, querying and deleting entities
+* batch operation support,
+* using
+
+What is planned in the future:
+
+* SAS (Shared Access Token) generation
+* get and set service properties
 
 Usage
 ==============
@@ -54,7 +64,6 @@ var azureTable = require('azure-table-node');
 var tableClient = azureTable.createClient({
   // predefined settings
 }, [baseClient]);
-
 ```
 
 Base client is the client on which the new one will be based. If not provided, it is based on the default one.
@@ -118,11 +127,11 @@ Account related:
 
 Underlying HTTP request related (passed without changes to request module):
 
-* `timeout` (int) - request timeout in miliseconds (default: 10000)
+* `timeout` (int) - request timeout in miliseconds (default: 30000)
 * `proxy` (string) - proxy URL
-* `forever` (bool) - use true to turn advanced socket reuse
-* `agentOptions` (object) - used to set maxSockets for forever or standard agent
-* `pool` (false|object) - use false to turn off socket reuse
+* `forever` (bool) - use `true` to turn advanced socket reuse
+* `agentOptions` (object) - used to set maxSockets option for forever or standard agent
+* `pool` (false|object) - use `false` to turn off socket reuse
 
 Azure Table Storage related:
 
@@ -240,7 +249,7 @@ Retrieve up to 1000 entities as array. The `options` is optional. If not used fi
 
 Options can contain below elements. All are optional:
 
-* `query` -- the `Query` object for returned entities filtering or string with properly created `$filter` (for very advanced queries)
+* `query` -- the `Query` object for returned entities filtering or string with properly created `$filter` query string (for very advanced queries), see [Querying Entities](http://msdn.microsoft.com/en-us/library/windowsazure/dd894031.aspx)
 * `limitTo` -- integer, if provided it will return no more than this results
 * `onlyFields` -- array of strings to retrieve only mentioned fields
 * `forceEtags` -- if set to `true` it will force of etag retrieval (even if full metadata is not set for this client)

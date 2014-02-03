@@ -199,4 +199,52 @@ describe('batch client', function() {
       done();
     });
   });
+
+  it('should work properly for uncommon values', function(done) {
+    var azure = nock('https://dummy.table.core.windows.net:443')
+      .post('/$batch', "--batch_0000000-0000-0000-0000-000000000000\r\nContent-Type: multipart/mixed; boundary=changeset_0000000-0000-0000-0000-000000000000\r\n\r\n--changeset_0000000-0000-0000-0000-000000000000\r\nContent-Type: application/http\r\nContent-Transfer-Encoding: binary\r\n\r\nPUT https://dummy.table.core.windows.net/testtable(PartitionKey=%27tests%27,RowKey=%27insert22%27) HTTP/1.1\r\ncontent-id: 0\r\naccept: application/json;odata=minimalmetadata\r\ncontent-type: application/json\r\n\r\n{\"PartitionKey\":\"tests\",\"RowKey\":\"insert22\",\"valueUnicode\":\"łączy🐒🐵?\"}\r\n--changeset_0000000-0000-0000-0000-000000000000\r\nContent-Type: application/http\r\nContent-Transfer-Encoding: binary\r\n\r\nPOST https://dummy.table.core.windows.net/testtable HTTP/1.1\r\ncontent-id: 1\r\naccept: application/json;odata=minimalmetadata\r\ncontent-type: application/json\r\n\r\n{\"PartitionKey\":\"tests\",\"RowKey\":\"insert23\"}\r\n--changeset_0000000-0000-0000-0000-000000000000\r\nContent-Type: application/http\r\nContent-Transfer-Encoding: binary\r\n\r\nMERGE https://dummy.table.core.windows.net/testtable(PartitionKey=%27tests%27,RowKey=%27insert24%27) HTTP/1.1\r\ncontent-id: 2\r\naccept: application/json;odata=minimalmetadata\r\ncontent-type: application/json\r\n\r\n{\"PartitionKey\":\"tests\",\"RowKey\":\"insert24\",\"value\":true,\"value2\":false}\r\n--changeset_0000000-0000-0000-0000-000000000000--\r\n--batch_0000000-0000-0000-0000-000000000000--")
+      .reply(202, "--batchresponse_e8e693a9-3575-4a9e-9ae1-0ffc7eb59b06\r\nContent-Type: multipart/mixed; boundary=changesetresponse_6ab495d3-a2ad-44d7-a11e-3f347705a1c0\r\n\r\n--changesetresponse_6ab495d3-a2ad-44d7-a11e-3f347705a1c0\r\nContent-Type: application/http\r\nContent-Transfer-Encoding: binary\r\n\r\nHTTP/1.1 204 No Content\r\nContent-ID: 0\r\nX-Content-Type-Options: nosniff\r\nCache-Control: no-cache\r\nDataServiceVersion: 1.0;\r\nETag: W/\"datetime'2014-02-03T10%3A01%3A42.4998806Z'\"\r\n\r\n\r\n--changesetresponse_6ab495d3-a2ad-44d7-a11e-3f347705a1c0\r\nContent-Type: application/http\r\nContent-Transfer-Encoding: binary\r\n\r\nHTTP/1.1 201 Created\r\nDataServiceVersion: 3.0;\r\nContent-Type: application/json;odata=minimalmetadata;streaming=true;charset=utf-8\r\nContent-ID: 1\r\nX-Content-Type-Options: nosniff\r\nCache-Control: no-cache\r\nLocation: https://dummy.table.core.windows.net/testtable(PartitionKey='tests',RowKey='insert23')\r\nETag: W/\"datetime'2014-02-03T10%3A01%3A42.4236239Z'\"\r\n\r\n{\"odata.metadata\":\"https://dummy.table.core.windows.net/$metadata#testtable/@Element\",\"PartitionKey\":\"tests\",\"RowKey\":\"insert23\",\"Timestamp\":\"2014-02-03T10:01:42.4236239Z\"}\r\n--changesetresponse_6ab495d3-a2ad-44d7-a11e-3f347705a1c0\r\nContent-Type: application/http\r\nContent-Transfer-Encoding: binary\r\n\r\nHTTP/1.1 204 No Content\r\nContent-ID: 2\r\nX-Content-Type-Options: nosniff\r\nCache-Control: no-cache\r\nDataServiceVersion: 1.0;\r\nETag: W/\"datetime'2014-02-03T10%3A01%3A42.5008806Z'\"\r\n\r\n\r\n--changesetresponse_6ab495d3-a2ad-44d7-a11e-3f347705a1c0--\r\n--batchresponse_e8e693a9-3575-4a9e-9ae1-0ffc7eb59b06--\r\n", { 'cache-control': 'no-cache',
+        'transfer-encoding': 'chunked',
+        'content-type': 'multipart/mixed; boundary=batchresponse_e8e693a9-3575-4a9e-9ae1-0ffc7eb59b06',
+        server: 'Windows-Azure-Table/1.0 Microsoft-HTTPAPI/2.0',
+        'x-ms-request-id': 'a5e1e35b-aabd-4bb3-8ce6-f14e1db8bff3',
+        'x-ms-version': '2013-08-15',
+        'x-content-type-options': 'nosniff',
+        date: 'Mon, 03 Feb 2014 10:01:41 GMT' });
+
+    var batchClient = client.startBatch();
+    batchClient.insertOrReplaceEntity('testtable', {
+      PartitionKey: 'tests',
+      RowKey: 'insert22',
+      valueUndefined: undefined,
+      valueNull: null,
+      valueUnicode: 'łączy🐒🐵?'
+    }).insertEntity('testtable', {
+      PartitionKey: 'tests',
+      RowKey: 'insert23'
+    }, {returnEntity: true}).insertOrMergeEntity('testtable', {
+      PartitionKey: 'tests',
+      RowKey: 'insert24',
+      value: true,
+      value2: false
+    });
+
+    batchClient.commit(function(err, data) {
+      expect(err).to.be.null;
+      expect(data).to.be.deep.equal(["W/\"datetime'2014-02-03T10%3A01%3A42.4998806Z'\"",
+        {
+          "PartitionKey": "tests",
+          "RowKey": "insert23",
+          "Timestamp": new Date ("2014-02-03T10:01:42.423Z"),
+          "__etag": "W/\"datetime'2014-02-03T10%3A01%3A42.4236239Z'\""
+        },
+        "W/\"datetime'2014-02-03T10%3A01%3A42.5008806Z'\""
+      ]);
+      expect(azure.isDone()).to.be.true;
+
+      done();
+    });
+  });
+
+
 });

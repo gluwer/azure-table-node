@@ -30,7 +30,7 @@ describe('create client', function() {
     expect(settings).to.have.property('accountUrl', 'http://dummy.table.core.windows.net/');
     expect(settings).to.have.property('accountName', 'dummy');
     expect(settings).to.have.property('accountKey', 'XUpVW5efmPDA42r4VY/86bt9k+smnhdEFVRRGrrt/wE0SmFg==');
-    expect(settings).to.have.property('timeout', 10000);
+    expect(settings).to.have.property('timeout', 30000);
   });
 
   it('should create client with overridden default settings', function() {

@@ -32,7 +32,7 @@ describe('default client', function() {
     expect(settings).to.have.property('accountUrl', 'https://dummy.table.core.windows.net/');
     expect(settings).to.have.property('accountName', 'dummy');
     expect(settings).to.have.property('accountKey', 'DWFdvtgaJ/4okdYJs1sAr1yyvrRe4dAuY5yPg+R+Wsl5wMiX6QOZ+6egJseLXK8YlDASx6eP0bfWV3rgZlgxYA==');
-    expect(settings).to.have.property('timeout', 10000);
+    expect(settings).to.have.property('timeout', 30000);
   });
 
   it('should allow to create new default client with overridden settings', function() {

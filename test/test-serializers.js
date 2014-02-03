@@ -70,7 +70,9 @@ describe('deserializeEntity', function() {
       aDate: '2014-01-12T12:12:12.124Z',
       'aDate@odata.type': 'Edm.DateTime',
       aGuid: '4185404a-5818-48c3-b9be-f217df0dba6f',
-      'aGuid@odata.type': 'Edm.Guid'
+      'aGuid@odata.type': 'Edm.Guid',
+      anUndefined: undefined,
+      aNull: null
     });
 
     expect(returnedValue).to.have.property('__etag', 'ETAG');

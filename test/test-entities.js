@@ -69,7 +69,7 @@ describe('default client', function() {
       value1: 'ABCDEFG',
       value2: new Date('2012-10-02T03:03:15Z'),
       otherValue: 1234567
-    }, {returnEntityWithETag: true}, function(err, data) {
+    }, {returnEntity: true}, function(err, data) {
       expect(err).to.be.null;
       expect(data).to.be.deep.equal({
         PartitionKey: 'tests',

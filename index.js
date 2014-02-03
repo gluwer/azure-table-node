@@ -6,7 +6,7 @@ var Client = require('./lib/client').Client;
 var Query = require('./lib/query').Query;
 
 var _defaultClientSetting = {
-  timeout: 10000,
+  timeout: 30000,
   metadata: 'minimal'
 };
 
