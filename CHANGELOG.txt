@@ -1,3 +1,6 @@
+1.1.1
+Added ECONNREFUSED to default list of transient errors.
+
 1.1.0
 Added SAS generation.
 Added support of SAS as authentication method.
