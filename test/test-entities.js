@@ -247,7 +247,7 @@ describe('default client', function() {
       });
     }
 
-    expect(updateEntity).to.throw('__etag in entity are required if forceUpdate is not used');
+    expect(updateEntity).to.throw('__etag in entity are required if force is not used');
     done();
   });
 

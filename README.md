@@ -7,12 +7,11 @@ What is supported:
 
 * creating, deleting and listing tables
 * creating, updating, querying and deleting entities
-* batch operation support,
-* using
+* batch operation support
+* generating SAS (Shared Access Signature) and using it for authentication
 
-What is planned in the future:
+What will likely be added in the future:
 
-* SAS (Shared Access Token) generation
 * get and set service properties
 
 Usage
@@ -123,7 +122,8 @@ Account related:
 
 * `accountUrl` (string) - URL of the service's endpoint (no default value)
 * `accountName` (string) - name of the used account (no default value)
-* `accountKey` (string) - base64 encoded account key (no default value)
+* `accountKey` (string) - base64 encoded account key (no default value), may be null if `sas` is provided
+* `sas` (string) - SAS query string that can be used instead of accountKey (in some less trusted environment) (no default value)
 
 Underlying HTTP request related (passed without changes to request module):
 
@@ -262,6 +262,18 @@ This method will return new object that you use to prepare a batch. All methods 
 ### commit(cb) - in objects returned by startBatch()
 
 Sends the batch request. Requires only callback function. In case of error the callback's first parameter will receive error info for operation that was the reason of the error. If the whole batch was committed, second argument will contain array of responses for each operation.
+
+### generateSAS(table, permissions, expiry, [options])
+
+Generates and returns the SAS (Shared Access Signature) query string to use in requests. The returned query string is already encoded and should be added after the main REST URL and other parameters. The `table` is the table for which SAS is generated. The `permissions` is a string with up to 4 characters describing permissions allowed on table: `r` (get/querying), `a` (insert), `u` (update), `d` (delete). Permissions must be provided in exactly the order mentioned and some operations like upsert may require both insert and update permissions. The `expiry` is the Date object with SAS expiration date. The `options` is an object with all other optional SAS restrictions:
+
+* `start` (Date) - date describing time when SAS should start to be valid
+* `policyId` (string) - string with the policy identifier
+* `startPK` (string) - the first partition key that is allowed
+* `startRK` (string) - the first row key that is allowed
+* `endPK` (string) - the last partition key that is allowed
+* `endRK` (string) - the last row key that is allowed
+
 
 ## Query object level
 

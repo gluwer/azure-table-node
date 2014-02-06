@@ -45,11 +45,9 @@ function createClient(settings, base) {
     baseSettings = _defaultClientSetting;
   }
 
-  var finalSettings = _.clone(baseSettings);
+  var finalSettings = _.clone(baseSettings, true);
   if (settings) {
-    finalSettings = _.merge(finalSettings, settings, function(a, b) {
-      return _.isArray(a) ? a.concat(b) : undefined;
-    });
+    finalSettings = _.merge(finalSettings, settings);
   }
 
   return Client.create(finalSettings);

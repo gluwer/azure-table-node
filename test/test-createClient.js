@@ -13,7 +13,7 @@ describe('create client', function() {
       });
     }
 
-    expect(creatingClient).to.throw('Provide accountUrl, accountName, and accountKey in settings or in env CLOUD_STORAGE_ACCOUNT');
+    expect(creatingClient).to.throw('Provide accountUrl, accountName, and accountKey (or sas) in settings or in env CLOUD_STORAGE_ACCOUNT');
   });
 
   it('should create client with additional settings and not override default settings', function() {

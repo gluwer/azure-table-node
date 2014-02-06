@@ -1,27 +1,10 @@
 /* jshint expr: true */
-/* globals it, describe, before, after */
+/* globals it, describe */
 'use strict';
 
 var expect = require('chai').expect;
 
 describe('default client', function() {
-  var oldEnvSetting;
-  before(function() {
-    oldEnvSetting = process.env.CLOUD_STORAGE_ACCOUNT;
-    process.env.CLOUD_STORAGE_ACCOUNT = 'TableEndpoint=https://dummy.table.core.windows.net/;AccountName=dummy;AccountKey=DWFdvtgaJ/4okdYJs1sAr1yyvrRe4dAuY5yPg+R+Wsl5wMiX6QOZ+6egJseLXK8YlDASx6eP0bfWV3rgZlgxYA==';
-  });
-
-  after(function() {
-    if (oldEnvSetting) {
-      process.env.CLOUD_STORAGE_ACCOUNT = oldEnvSetting;
-    } else {
-      delete process.env.CLOUD_STORAGE_ACCOUNT;
-    }
-
-    // force reloading the index module for next tests
-    delete require.cache[require.resolve('../index')];
-  });
-
   it('should be created with storage account settings', function() {
     var azureTable = require('../index');
     var defaultClient = azureTable.getDefaultClient();
@@ -51,6 +34,12 @@ describe('default client', function() {
     expect(settings).to.have.property('accountKey', 'DWFdvtgaJ/4okdYJs1sAr1yyvrRe4dAuY5yPg+R+Wsl5wMiX6QOZ+6egJseLXK8YlDASx6eP0bfWV3rgZlgxYA==');
     expect(settings).to.have.property('timeout', 15000);
     expect(settings).to.have.property('aSetting', 'HELLO');
+
+    azureTable.setDefaultClient({
+      timeout: 30000,
+      aSetting: null,
+      accountName: 'dummy'
+    });
   });
 
   it('should use default client as singleton', function() {

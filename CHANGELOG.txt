@@ -1,4 +1,8 @@
-
+1.1.0
+Added SAS generation.
+Added support of SAS as authentication method.
+Fixed error text in update/delete request (from forceUpdate to force)
+Fixed settings cloning issue (deep cloning is now enabled).
 
 1.0.0
 Initial release
