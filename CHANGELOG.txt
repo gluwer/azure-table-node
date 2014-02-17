@@ -1,3 +1,6 @@
+1.2.0
+Added agent option to be able to use custom agents.
+
 1.1.1
 Added ECONNREFUSED to default list of transient errors.
 

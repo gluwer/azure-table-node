@@ -1,6 +1,6 @@
 {
   "name": "azure-table-node",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Azure Table Storage client using JSON on the wire",
   "main": "index.js",
   "scripts": {

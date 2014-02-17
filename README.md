@@ -130,6 +130,7 @@ Underlying HTTP request related (passed without changes to request module):
 * `timeout` (int) - request timeout in miliseconds (default: 30000)
 * `proxy` (string) - proxy URL
 * `forever` (bool) - use `true` to turn advanced socket reuse
+* `agent` (Agent) - already created agent object (do not set `proxy`, `forever` or `pool` is set (may not work otherwise)
 * `agentOptions` (object) - used to set maxSockets option for forever or standard agent
 * `pool` (false|object) - use `false` to turn off socket reuse
 
