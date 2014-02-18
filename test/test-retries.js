@@ -177,6 +177,7 @@ describe('client with custom retry options', function() {
     client.createTable('testtable', function(err, data) {
       expect(err).to.not.be.null;
       expect(err).to.have.property('code', 'SomeError2');
+      expect(err).to.have.property('retriesMade', 1);
       expect(data).to.be.undefined;
       expect(azure.isDone()).to.be.true;
 

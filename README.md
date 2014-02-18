@@ -175,6 +175,8 @@ function _retryLogic(requestOptions, nextReq) {
 }
 ```
 
+In case of reties, the default retry function returns `retriesMade` key in error informing about the number of retries made (helps in debugging).
+
 API
 ===
 
