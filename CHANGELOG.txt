@@ -1,3 +1,6 @@
+1.3.1
+Fixed int64 handling in queries.
+
 1.3.0
 Adding info in error about number of retries.
 

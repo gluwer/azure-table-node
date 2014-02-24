@@ -9,6 +9,7 @@ describe('Query', function() {
   it('should allow to create simple queries', function() {
     expect(Query.create('PartitionKey', '==', 'ABC')).to.have.property('_query','PartitionKey eq \'ABC\'');
     expect(Query.create().where('zebra', '>', 12)).to.have.property('_query','zebra gt 12');
+    expect(Query.create().where('zebra2', '<=', 2147483648)).to.have.property('_query','zebra2 le 2147483648L');
   });
 
   it('should handle different value types', function() {

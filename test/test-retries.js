@@ -184,4 +184,30 @@ describe('client with custom retry options', function() {
       done();
     });
   });
+
+  it('should start counting retries again in next request', function(done) {
+    var azure = nock('https://dummy.table.core.windows.net:443')
+      .post('/Tables', {TableName:"testtable"})
+      .reply(502, "{\"odata.error\":{\"code\":\"SomeError1\",\"message\":{\"lang\":\"en-US\",\"value\":\"Some error.\\nRequestId:5625a0b2-dba1-485c-996d-99184424adc7\\nTime:2014-01-22T12:35:16.8015235Z\"}}}", { 'cache-control': 'no-cache',
+        'transfer-encoding': 'chunked',
+        'content-type': 'application/json;odata=minimalmetadata;streaming=true;charset=utf-8',
+        'x-ms-version': '2013-08-15',
+        date: 'Wed, 22 Jan 2014 12:35:15 GMT' })
+      .post('/Tables', {TableName:"testtable"})
+      .reply(502, "{\"odata.error\":{\"code\":\"SomeError2\",\"message\":{\"lang\":\"en-US\",\"value\":\"Some error.\\nRequestId:5625a0b2-dba1-485c-996d-99184424adc7\\nTime:2014-01-22T12:35:16.8015235Z\"}}}", { 'cache-control': 'no-cache',
+        'transfer-encoding': 'chunked',
+        'content-type': 'application/json;odata=minimalmetadata;streaming=true;charset=utf-8',
+        'x-ms-version': '2013-08-15',
+        date: 'Wed, 22 Jan 2014 12:35:15 GMT' });
+
+    client.createTable('testtable', function(err, data) {
+      expect(err).to.not.be.null;
+      expect(err).to.have.property('code', 'SomeError2');
+      expect(err).to.have.property('retriesMade', 1);
+      expect(data).to.be.undefined;
+      expect(azure.isDone()).to.be.true;
+
+      done();
+    });
+  });
 });
