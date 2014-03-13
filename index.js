@@ -64,7 +64,9 @@ var azureTable = {
   // Client object
   Client: Client,
   // Query object
-  Query: Query
+  Query: Query,
+  // converts account string to account object
+  parseAccountString: utils.parseAccountString
 };
 
 _initDefaultConnection();
