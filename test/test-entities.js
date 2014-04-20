@@ -227,7 +227,7 @@ describe('default client', function() {
       value2: new Date('2012-10-02T03:03:15Z'),
       otherValue: 1234567,
       __etag: 'W/"datetime\'2014-01-22T12%3A26%3A09.6190646Z\'"'
-    }, function(err, data) {
+    }, function(err) {
       expect(err).to.not.be.null;
       expect(err).to.have.property('code', 'UpdateConditionNotSatisfied');
       expect(azure.isDone()).to.be.true;
