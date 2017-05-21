@@ -550,7 +550,7 @@ describe('default client', function() {
 
   it('should use continuation to return next part of results', function(done) {
     var azure = nock('https://dummy.table.core.windows.net:443')
-      .get('/testtable()?%24top=2&NextPartitionKey=1!8!dGVzdHo-&NextRowKey=1!8!dGVzdDE-&%24select=RowKey%2CAb')
+      .get('/testtable()?%24top=2&NextPartitionKey=1%218%21dGVzdHo-&NextRowKey=1%218%21dGVzdDE-&%24select=RowKey%2CAb')
       .reply(200, "{\"odata.metadata\":\"https://dummy.table.core.windows.net/$metadata#testtable&$select=RowKey,Ab\",\"value\":[{\"RowKey\":\"test1\",\"Ab\":\"XYZ\"}]}", { 'cache-control': 'no-cache',
         'transfer-encoding': 'chunked',
         'content-type': 'application/json;odata=minimalmetadata;streaming=true;charset=utf-8',

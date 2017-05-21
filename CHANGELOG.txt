@@ -1,5 +1,8 @@
+1.5.0
+Updated dependencies (shouldn't be any regressions but bumped minor)
+
 1.4.2
-Fixed query with $filter as string.
+Fixed providing query filter as string. [#1]
 
 1.4.1
 Fixed returning continuation as string.
