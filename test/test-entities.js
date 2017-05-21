@@ -461,6 +461,27 @@ describe('default client', function() {
     });
   });
 
+  it('should return empty array if no entities match query but using query as string', function(done) {
+    var azure = nock('https://dummy.table.core.windows.net:443')
+      .get('/testtable()?%24filter=PartitionKey%20eq%20%27tests1%27')
+      .reply(200, "{\"odata.metadata\":\"https://dummy.table.core.windows.net/$metadata#testtable\",\"value\":[]}", { 'cache-control': 'no-cache',
+        'transfer-encoding': 'chunked',
+        'content-type': 'application/json;odata=minimalmetadata;streaming=true;charset=utf-8',
+        'x-ms-version': '2013-08-15',
+        date: 'Fri, 24 Jan 2014 12:46:16 GMT' });
+
+    client.queryEntities('testtable', {
+      query: "PartitionKey eq 'tests1'"
+    }, function(err, data) {
+      expect(err).to.be.null;
+      expect(data).to.be.an.array;
+      expect(data).to.have.lengthOf(0);
+      expect(azure.isDone()).to.be.true;
+
+      done();
+    });
+  });
+
   it('should return all 3 array elements if no query is used', function(done) {
     var azure = nock('https://dummy.table.core.windows.net:443')
       .get('/testtable()')

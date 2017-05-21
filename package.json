@@ -1,10 +1,10 @@
 {
   "name": "azure-table-node",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Azure Table Storage client using JSON on the wire",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "cross-env CLOUD_STORAGE_ACCOUNT=\"TableEndpoint=https://dummy.table.core.windows.net/;AccountName=dummy;AccountKey=DWFdvtgaJ/4okdYJs1sAr1yyvrRe4dAuY5yPg+R+Wsl5wMiX6QOZ+6egJseLXK8YlDASx6eP0bfWV3rgZlgxYA==\" mocha"
   },
   "repository": {
     "type": "git",
@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "mocha": "~1.17.0",
+    "cross-env": "^5.0.0",
     "chai": "~1.8.1",
     "nock": "~0.27.1"
   }
